@@ -101,7 +101,7 @@ int StrategyState = 0;
  * @return Pointer to a string.
  */
 std::string selectInput(RunInfo Info) {
-  int Index = 0;
+  int Index = rand()%SeedInputs.size(); // set to 0 originally.
   return SeedInputs[Index];
 }
 
@@ -123,7 +123,7 @@ const int LENGTH_ALPHA = sizeof(ALPHA);
  * @param Original Original input string.
  * @return std::string mutated string.
  */
-std::string mutationA(std::string Original) { return Original; }
+std::string mutationA(std::string Original) {return Original;}
 
 /**
  * @brief Mutation Strategy that inserts a random
@@ -149,6 +149,34 @@ std::string mutationB(std::string Original) {
  * Get creative with your strategies.
  */
 
+std::string mutationC(std::string Original) {
+   if(Original.length()<=0)
+    return Original;
+
+    int Index = rand()%Original.length();
+    char temp = Original[(Index-1)%Original.length()];
+    Original[(Index-1)%Original.length()] = Original[Index];
+    Original[Index] = temp;
+    return Original;
+}
+
+std::string mutationD(std::string Original){
+  if(Original.length()<=0)
+  return Original;
+
+  int Index = rand()%Original.length();
+   Original.erase(Index, Index+1);
+  return Original;
+}
+
+std::string mutationE(std::string Original){
+  if(Original.length()<=0)
+  return Original;
+
+  int Index = rand()%Original.length();
+  Original = Original.substr(Index)+Original.substr(0,Index);
+  return Original;
+}
 /**
  * @brief Vector containing all the available mutation functions
  *
@@ -156,7 +184,7 @@ std::string mutationB(std::string Original) {
  * For example if you implement mutationC then update it to be:
  * std::vector<MutationFn *> MutationFns = {mutationA, mutationB, mutationC};
  */
-std::vector<MutationFn *> MutationFns = {mutationA, mutationB};
+std::vector<MutationFn *> MutationFns = {mutationA, mutationB, mutationC, mutationD, mutationE};
 
 /**
  * @brief Select a mutation function to apply to the seed input.
@@ -171,7 +199,7 @@ std::vector<MutationFn *> MutationFns = {mutationA, mutationB};
  */
 MutationFn *selectMutationFn(RunInfo &Info) {
   int Strat = rand() % MutationFns.size();
-
+  
   return MutationFns[Strat];
 }
 
@@ -206,6 +234,12 @@ void feedBack(std::string &Target, RunInfo &Info) {
   CoverageState.assign(RawCoverageData.begin(),
                        RawCoverageData.end()); // No extra processing
 
+  int prevLen = PrevCoverageState.size();
+  int currLen = CoverageState.size();
+
+  if(currLen>prevLen){
+    SeedInputs.push_back(Info.MutatedInput);
+  }
 }
 
 int Freq = 1000;

@@ -216,9 +216,9 @@ class PredicateInfo:
         :return: The failure value.
         """
         # TODO: Implement the calculation of the failure value.
+        
 
-
-        return 0
+        return self.num_true_in_failure/(self.num_true_in_success+num_true_in_failure)
 
     @property
     def context(self) -> float:
@@ -229,7 +229,7 @@ class PredicateInfo:
         """
         # TODO: Implement the calculation of the context value.
 
-        return 0
+        return self.num_observed_in_failure/(self.num_observed_in_success+self.num_observed_in_failure)
 
     @property
     def increase(self):
@@ -240,7 +240,7 @@ class PredicateInfo:
         """
         # TODO: Implement the calculation of the increase value.
 
-        return 0
+        return self.failure()-self.conext()
 
     """
     Helper methods that map variable names to names in lecture slides.

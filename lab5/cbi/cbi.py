@@ -36,7 +36,13 @@ def collect_observations(log: CBILog) -> Dict[Predicate, ObservationStatus]:
 
     Hint: The PredicateType.alternatives will come in handy.
     """
-
+    
+    for logEntry in log:
+        value = logEntry.value
+        column = logEntry.column
+        line = logEntry.line
+        pred = predicate(line, column, value)
+            
 
     return observations
 
@@ -51,8 +57,14 @@ def collect_all_predicates(logs: Iterable[CBILog]) -> Set[Predicate]:
     predicates = set()
 
     # TODO: Add your code here
-
-
+    for log in logs:
+        for logEntry in log:
+            value = logEntry.value
+            column = logEntry.column
+            line = logEntry.line
+            pred = predicate(line, column, value)
+            predicates.add(pred)
+            
     return predicates
 
 

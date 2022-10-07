@@ -67,6 +67,14 @@ bool CBIInstrument::runOnFunction(Function &F) {
      *   use instrumentReturn
      * @param Branch
      */
+    if(BranchInst *Branch = dyn_cast<BranchInst>(&Inst)){
+
+      instrumentBranch(M, Branch, Line, Col);
+    }
+
+    else if(CallInst *Call = dyn_cast<CallInst>(&Inst)){
+      instrumentReturn(M, Call, Line, Col);
+    }
   }
   return true;
 }
@@ -81,6 +89,15 @@ void instrumentBranch(Module *M, BranchInst *Branch, int Line, int Col) {
   /**
    * TODO: Add code to instrument the Branch Instruction.
    */
+  auto LineVal = ConstantInt::get(Int32Type, Line);
+  auto ColVal = ConstantInt::get(Int32Type, Col);
+
+  if(Branch->isConditional()){
+      Value* CondVal = Branch->getCondition();
+      std::vector<Value*> Args = {LineVal, ColVal, CondVal};
+      auto *BranchFunction = M->getFunction(CBI_BRANCH_FUNCTION_NAME);
+      CallInst::Create(BranchFunction, Args, "", Branch);
+  }
 }
 
 /**
@@ -95,6 +112,14 @@ void instrumentReturn(Module *M, CallInst *Call, int Line, int Col) {
    *
    * Note: CallInst::Create(.) follows Insert Before semantics.
    */
+  auto LineVal = ConstantInt::get(Int32Type, Line);
+  auto ColVal = ConstantInt::get(Int32Type, Col);
+  int  ret = Call->getNumOperands();
+  auto retVal = ConstantInt::get(Int32Type, ret);
+
+  std::vector<Value *> Args = {LineVal, ColVal, retVal};
+  auto *CallFunction = M->getFunction(CBI_RETURN_FUNCTION_NAME);
+  CallInst::Create(CallFunction, Args, "", Call);
 }
 
 char CBIInstrument::ID = 1;

@@ -30,6 +30,17 @@ bool Instrument::runOnFunction(Function &F) {
      * print the information about its location and operands as specified in the
      * Lab document.
      */
+    if(Inst.isBinaryOp()){
+      auto *binary = dyn_cast<BinaryOperator>(&Inst);
+      Value* op1 = binary->getOperand(0);
+      Value* op2 = binary->getOperand(1);
+      std::string operand1 = variable(op1);
+      std::string operand2 = variable(op2);
+      Instruction::BinaryOps Opcode = binary->getOpcode();
+      const char symbol = getBinOpSymbol(Opcode);
+      std::string name = getBinOpName(symbol);
+      outs()<< name << "on Line" << Line <<", Column"<<Col<<"with first operand"<< operand1 <<"and second operand"<< operand2<<"\n";
+    }
   }
   return false;
 }
